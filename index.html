@@ -66,11 +66,63 @@
         context.scale(ratio, ratio);
     }
 
+	var coin = {x: 128, y: 128}
+	var coinStart = {x: 128, y: 128}
+	var coinTarget = {x: 64, y: 64}
+	var coinMoving = false
+	var coinBegin = 0
+	var coinEnd = 0
+
 	function draw(ctx) {
-		ctx.fillStyle = "crimson"
+		update()
+		ctx.fillStyle = "gold"
 		ctx.beginPath()
-		ctx.arc(64, 64, 8, 0, 2 * Math.PI)
+		ctx.arc(coin.x, coin.y, 8, 0, 2 * Math.PI)
 		ctx.fill()
+	}
+
+	function update() {
+		if(!coinMoving && (coin.x != coinTarget.x || coin.y != coinTarget.y)) {
+			coinMoving = true
+			startTween(coin, coinTarget, 600, (x) => {
+				return powerEasing(4, 0, x)
+			}, () => {
+				coinMoving = false
+				coinTarget.x = Math.floor(128 * Math.random())
+				coinTarget.y = Math.floor(128 * Math.random())
+			})
+		}
+	}
+
+	function powerEasing(a, b, x) {
+		return (b+a-2)* Math.pow(x,3) + (-2*a-b+3)* Math.pow(x,2) + a*x
+	}
+
+	function startTween(initialObject, targetProperties, duration = 1000, easingFunction = (x) => x, onComplete = () => {}) {
+		let copy = {}
+		let completed = false
+		for(let key in targetProperties) {
+			copy[key] = initialObject[key]
+		}
+		let begin = new Date().getTime()
+		setTimeout(() => {
+			for(let key in targetProperties) {
+				initialObject[key] = targetProperties[key]
+			}
+			onComplete()
+			completed = true
+		}, duration)
+		var runTween = () => {
+			if(completed) {
+				return
+			}
+			let delta = (new Date().getTime() - begin) / duration
+			for(let key in targetProperties) {
+				initialObject[key] = (targetProperties[key] - copy[key]) * easingFunction(delta) + copy[key]
+			}
+			requestAnimationFrame(runTween)
+		}
+		runTween()
 	}
 </script>
 </body>

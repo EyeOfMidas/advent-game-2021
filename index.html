@@ -40,6 +40,8 @@
 		context.imageSmoothingEnabled = false
 		pixelRato = getPixelRatio(context)
 		animate()
+
+		canvas.addEventListener("click", onClick)
 	})
 
 	function animate() {
@@ -67,11 +69,8 @@
     }
 
 	var coin = {x: 128, y: 128}
-	var coinStart = {x: 128, y: 128}
 	var coinTarget = {x: 64, y: 64}
-	var coinMoving = false
-	var coinBegin = 0
-	var coinEnd = 0
+	var movingId = 0
 
 	function draw(ctx) {
 		update()
@@ -81,39 +80,34 @@
 		ctx.fill()
 	}
 
-	function update() {
-		if(!coinMoving && (coin.x != coinTarget.x || coin.y != coinTarget.y)) {
-			coinMoving = true
-			startTween(coin, coinTarget, 600, (x) => {
-				return powerEasing(4, 0, x)
-			}, () => {
-				coinMoving = false
-				coinTarget.x = Math.floor(128 * Math.random())
-				coinTarget.y = Math.floor(128 * Math.random())
-			})
-		}
+	function update() {			
 	}
 
 	function powerEasing(a, b, x) {
 		return (b+a-2)* Math.pow(x,3) + (-2*a-b+3)* Math.pow(x,2) + a*x
 	}
-
-	function startTween(initialObject, targetProperties, duration = 1000, easingFunction = (x) => x, onComplete = () => {}) {
+	window.tweenCounter = 0
+	window.activeTweens = []
+	function setTween(initialObject, targetProperties, duration = 1000, easingFunction = (x) => x, onComplete = () => {}) {
+		let tweenId = ++window.tweenCounter
 		let copy = {}
-		let completed = false
 		for(let key in targetProperties) {
 			copy[key] = initialObject[key]
 		}
 		let begin = new Date().getTime()
 		setTimeout(() => {
+			if(!window.activeTweens.includes(tweenId)) {
+				return
+			}
 			for(let key in targetProperties) {
 				initialObject[key] = targetProperties[key]
 			}
 			onComplete()
-			completed = true
+			delete window.activeTweens[window.activeTweens.indexOf(tweenId)]
 		}, duration)
+		window.activeTweens.push(tweenId)
 		var runTween = () => {
-			if(completed) {
+			if(!window.activeTweens.includes(tweenId)) {
 				return
 			}
 			let delta = (new Date().getTime() - begin) / duration
@@ -123,7 +117,21 @@
 			requestAnimationFrame(runTween)
 		}
 		runTween()
+		return tweenId
 	}
+
+	function clearTween(id) {
+		delete window.activeTweens[window.activeTweens.indexOf(id)]
+	}
+
+	function onClick(event) {
+		clearTween(movingId)
+		coinTarget.x = event.offsetX
+		coinTarget.y = event.offsetY
+		movingId = setTween(coin, coinTarget, 600, (x) => {
+				return powerEasing(4, 0, x)
+			})
+		}
 </script>
 </body>
 </html>

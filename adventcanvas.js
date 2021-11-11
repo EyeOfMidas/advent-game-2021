@@ -6,8 +6,9 @@ function adventCanvas(containerId, drawFunction, handlers) {
 	canvas.width = 128
 	canvas.height = 128
 	canvasContainer.appendChild(canvas)
-	document.addEventListener("DOMContentLoaded", () => {
-		context = canvas.getContext("2d")
+	context = canvas.getContext("2d")
+
+	document.addEventListener("DOMContentLoaded", () => {	
 		context.imageSmoothingEnabled = false
 		pixelRato = getPixelRatio(context)
 		animate()

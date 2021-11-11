@@ -50,14 +50,31 @@
 		touchmove: onTouchMove,
 	})
 
+	window.addEventListener("keydown", onKeyDown)
+
 	function draw(ctx) {
 		update()
 
+		drawBackground(ctx)
+		drawCursor(ctx)
+		drawSnowflake(ctx)
+	}
+
+	function drawBackground(ctx) {
+		ctx.fillStyle = "#FFFFFF"
+		ctx.beginPath();
+		ctx.rect(0,0, canvas.width, canvas.height)
+		ctx.fill()
+	}
+
+	function drawCursor(ctx) {
 		ctx.fillStyle = "#0D8CFD"
 		ctx.beginPath()
 		ctx.arc(pen.x, pen.y, 4, 0, 2 * Math.PI)
 		ctx.fill()
+	}
 
+	function drawSnowflake(ctx) {
 		ctx.strokeStyle = "#0D8CFD"
 		ctx.lineWidth = 4
 		ctx.lineCap = "round"
@@ -123,11 +140,13 @@
 
 	function onMouseEnter(event) {
 		canvas.style.cursor = "none"
+		canSave = true
 	}
 
 	function onMouseLeave(event) {
 		canvas.style.cursor = "default"
 		isDrawing = false
+		canSave = false
 	}
 
 	function onTouchStart(event) {
@@ -139,6 +158,25 @@
 		pen.x = event.targetTouches[0].clientX - rect.left
 		pen.y = event.targetTouches[0].clientY - rect.top
 		segmentsDrawn[segmentsDrawn.length - 1].push({x: pen.x, y: pen.y})
+	}
+
+	function onKeyDown(event) {
+		if(event.code == "KeyS" && event.ctrlKey && canSave) {
+			event.preventDefault()
+			save()
+		}
+	}
+
+	function save() {
+		drawBackground(context)
+		drawSnowflake(context)
+		var gh = canvas.toDataURL('image/png');
+
+		var a  = document.createElement('a');
+		a.href = gh;
+		a.download = `advent-game-2021_${new Date().getTime()}.png`;
+
+		a.click()
 	}
 </script>
 </body>

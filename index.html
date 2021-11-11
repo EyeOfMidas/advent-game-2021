@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<style type="text/css">
+			html, body{
+				margin: 0;
+				padding: 0;
+				display: grid;
+				grid-template-columns: 1fr;
+  				grid-template-rows: 100vh;
+				align-items: center;
+  				justify-items: center;
+				background-color: black;
+			}
+			canvas {
+				display: block;
+				width: 128px;
+				height: 128px;
+				margin-left: auto;
+				margin-right: auto;
+				border: 1px solid lightgray;
+				background-color: white;
+			}
+		</style>
+	</head>
+	<body>
+<div id="day-3"></div>
+<script>
+	var canvas, context
+	var pixelRato = 1
+	document.addEventListener("DOMContentLoaded", () => {
+		let canvasContainer = document.getElementById("day-3")
+		canvas = document.createElement("canvas")
+		canvas.width = 128
+		canvas.height = 128
+		canvasContainer.appendChild(canvas)
+		context = canvas.getContext("2d")
+		context.imageSmoothingEnabled = false
+		pixelRato = getPixelRatio(context)
+		animate()
+	})
+
+	function animate() {
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		draw(context)
+		requestAnimationFrame(animate);
+	}
+
+	function getPixelRatio(context) {
+        let dpr = window.devicePixelRatio || 1;
+        let bsr = context.webkitBackingStorePixelRatio ||
+            context.mozBackingStorePixelRatio ||
+            context.msBackingStorePixelRatio ||
+            context.oBackingStorePixelRatio ||
+            context.backingStorePixelRatio || 1;
+    
+        return dpr / bsr;
+    }
+	function onResize() {
+        pixelRato = getPixelRatio(context)
+        let canvasBounds = canvas.getBoundingClientRect();
+        canvas.width = canvasBounds.width * ratio;
+        canvas.height = canvasBounds.height * ratio;
+        context.scale(ratio, ratio);
+    }
+
+	function draw(ctx) {
+		ctx.fillStyle = "crimson"
+		ctx.beginPath()
+		ctx.arc(64, 64, 8, 0, 2 * Math.PI)
+		ctx.fill()
+	}
+</script>
+</body>
+</html>

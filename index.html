@@ -60,18 +60,25 @@
 		ctx.strokeStyle = "#0D8CFD"
 		ctx.lineWidth = 4
 		ctx.lineCap = "round"
+		ctx.save()
+		ctx.translate(64, 64)
+		for(let direction = 0; direction < 6; direction++) {
+		
 		segmentsDrawn.forEach(segment => {
 			for(let i = 0; i < segment.length - 1; i++) {
-			let point = segment[i]
-			let nextPoint = segment[i+1]
+				let point = segment[i]
+				let nextPoint = segment[i+1]
 
-			ctx.beginPath()
-			ctx.moveTo(point.x, point.y)
-			ctx.lineTo(nextPoint.x, nextPoint.y)
-			ctx.stroke()
+				ctx.beginPath()
+				ctx.moveTo(point.x-64, point.y-64)
+				ctx.lineTo(nextPoint.x-64, nextPoint.y-64)
+				ctx.stroke()
 
-		}
+			}
 		})
+		ctx.rotate(Math.PI / 3)
+	}
+		ctx.restore()
 	}
 
 	function update() {			
@@ -119,6 +126,7 @@
 
 	function onMouseLeave(event) {
 		canvas.style.cursor = "default"
+		isDrawing = false
 	}
 
 	function onTouchStart(event) {

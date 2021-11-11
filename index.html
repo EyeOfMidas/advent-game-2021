@@ -30,18 +30,48 @@
 <script src="./settween.js"></script>
 <script src="./adventcanvas.js"></script>
 <script>
-	var coin = {x: 64, y: 64}
-	var coinTarget = {x: 64, y: 64}
-	var movingId = 0
+	// var coin = {x: 64, y: 64}
+	// var coinTarget = {x: 64, y: 64}
+	// var movingId = 0
 
-	var {canvas, context} = adventCanvas("day-3", draw, {click: onClick})
+	var pen = {x: 64, y: 64}
+	var segmentsDrawn = []
+	var pointsDrawn = []
+
+	var {canvas, context} = adventCanvas("day-3", draw, {
+		click: onClick,
+		mousedown: onMouseDown,
+		mousemove: onMouseMove,
+		mouseup: onMouseUp,
+		mouseenter: onMouseEnter,
+		mouseleave: onMouseLeave,
+		contextmenu: onContextMenu,
+		touchmove: onTouchMove,
+	})
 
 	function draw(ctx) {
 		update()
-		ctx.fillStyle = "gold"
+
+		ctx.fillStyle = "#0D8CFD"
 		ctx.beginPath()
-		ctx.arc(coin.x, coin.y, 8, 0, 2 * Math.PI)
+		ctx.arc(pen.x, pen.y, 4, 0, 2 * Math.PI)
 		ctx.fill()
+
+		ctx.strokeStyle = "#0D8CFD"
+		ctx.lineWidth = 4
+		ctx.lineCap = "round"
+		segmentsDrawn.forEach(segment => {
+			for(let i = 0; i < segment.length - 1; i++) {
+			let point = segment[i]
+			let nextPoint = segment[i+1]
+
+			ctx.beginPath()
+			ctx.moveTo(point.x, point.y)
+			ctx.lineTo(nextPoint.x, nextPoint.y)
+			ctx.stroke()
+
+		}
+		})
 	}
 
 	function update() {			
@@ -52,12 +82,54 @@
 	}
 
 	function onClick(event) {
-		clearTween(movingId)
-		coinTarget.x = event.offsetX
-		coinTarget.y = event.offsetY
-		movingId = setTween(coin, coinTarget, 600, (x) => {
-			return powerEasing(4, 0, x)
-		})
+	}
+
+	let isDrawing = false
+
+	function onMouseDown(event) {
+		event.preventDefault()
+		event.stopPropagation()
+		if(event.buttons == 1) {
+			isDrawing = true;
+			segmentsDrawn.push([])
+		}
+	}
+
+	function onContextMenu(event){
+		event.preventDefault()
+		pointsDrawn = []
+		segmentsDrawn = []
+	}
+
+	function onMouseMove(event) {
+		pen.x = event.offsetX
+		pen.y = event.offsetY
+		if(isDrawing) {
+			segmentsDrawn[segmentsDrawn.length - 1].push({x: pen.x, y: pen.y})
+		}
+	}
+
+	function onMouseUp(event) {
+		isDrawing = false;
+	}
+
+	function onMouseEnter(event) {
+		canvas.style.cursor = "none"
+	}
+
+	function onMouseLeave(event) {
+		canvas.style.cursor = "default"
+	}
+
+	function onTouchStart(event) {
+		segmentsDrawn.push([])
+	}
+
+	function onTouchMove(event){
+		let rect = event.target.getBoundingClientRect()
+		pen.x = event.targetTouches[0].clientX - rect.left
+		pen.y = event.targetTouches[0].clientY - rect.top
+		segmentsDrawn[segmentsDrawn.length - 1].push({x: pen.x, y: pen.y})
 	}
 </script>
 </body>

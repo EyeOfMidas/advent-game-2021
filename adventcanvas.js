@@ -1,12 +1,12 @@
 function adventCanvas(containerId, drawFunction, handlers) {
 	let canvas, context
 	let pixelRato = 1
+	let canvasContainer = document.getElementById("day-3")
+	canvas = document.createElement("canvas")
+	canvas.width = 128
+	canvas.height = 128
+	canvasContainer.appendChild(canvas)
 	document.addEventListener("DOMContentLoaded", () => {
-		let canvasContainer = document.getElementById("day-3")
-		canvas = document.createElement("canvas")
-		canvas.width = 128
-		canvas.height = 128
-		canvasContainer.appendChild(canvas)
 		context = canvas.getContext("2d")
 		context.imageSmoothingEnabled = false
 		pixelRato = getPixelRatio(context)
@@ -43,5 +43,5 @@ function adventCanvas(containerId, drawFunction, handlers) {
 		canvas.height = canvasBounds.height * pixelRato;
 		context.scale(pixelRato, pixelRato);
 	}
-	return {canvas: canvas, context: context}
+	return {canvas: canvas, context:context}
 }

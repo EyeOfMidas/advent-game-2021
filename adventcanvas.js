@@ -1,6 +1,6 @@
 function adventCanvas(containerId, drawFunction, handlers) {
-	var canvas, context
-	var pixelRato = 1
+	let canvas, context
+	let pixelRato = 1
 	document.addEventListener("DOMContentLoaded", () => {
 		let canvasContainer = document.getElementById("day-3")
 		canvas = document.createElement("canvas")

@@ -41,6 +41,7 @@
 	var pen = {x: 64, y: 64}
 	var segmentsDrawn = []
 	var pointsDrawn = []
+	var reflectionDivisions = 6;
 
 	var {canvas, context} = adventCanvas("day-3", draw, {
 		click: onClick,
@@ -52,6 +53,7 @@
 		contextmenu: onContextMenu,
 		touchstart: onTouchStart,
 		touchmove: onTouchMove,
+		wheel: onScrollWheel,
 	})
 
 	window.addEventListener("keydown", onKeyDown)
@@ -84,7 +86,7 @@
 		ctx.lineCap = "round"
 		ctx.save()
 		ctx.translate(64, 64)
-		for(let direction = 0; direction < 6; direction++) {
+		for(let direction = 0; direction < reflectionDivisions; direction++) {
 		
 		segmentsDrawn.forEach(segment => {
 			for(let i = 0; i < segment.length - 1; i++) {
@@ -98,7 +100,7 @@
 
 			}
 		})
-		ctx.rotate(Math.PI / 3)
+		ctx.rotate(Math.PI / (reflectionDivisions / 2))
 	}
 		ctx.restore()
 	}
@@ -187,6 +189,17 @@
 		a.download = `advent-game-2021_${new Date().getTime()}.png`;
 
 		a.click()
+	}
+
+	function onScrollWheel(event) {
+		reflectionDivisions += Math.sign(event.wheelDelta)
+
+		if(reflectionDivisions == 4) { //fuck off Nazis
+			reflectionDivisions += Math.sign(event.wheelDelta)
+		}
+
+		reflectionDivisions = Math.min(8, Math.max(2, reflectionDivisions))
+		
 	}
 </script>
 <!-- <div class="scroller"></div> -->

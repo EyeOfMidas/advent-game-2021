@@ -192,6 +192,7 @@
 	}
 
 	function onScrollWheel(event) {
+		event.preventDefault()
 		reflectionDivisions += Math.sign(event.wheelDelta)
 
 		if(reflectionDivisions == 4) { //fuck off Nazis
